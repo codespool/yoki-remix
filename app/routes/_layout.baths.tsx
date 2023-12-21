@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async () => {
   return json(apiData);
 };
 
-export default function Evolve() {
+export default function Baths() {
   const { apiData, imageUrlPrefix } = useLoaderData<LoaderFunction>();
 
   const backgroundImage = apiData.data.background_image.url;

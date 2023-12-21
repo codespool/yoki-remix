@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   useAccount,
   useContractRead,
@@ -67,31 +67,34 @@ const BaseYoki = () => {
     args: [YOKI_TOKEN_ID],
   });
 
-  const { data: yokiBalance } = useContractRead({
+  const { data: yokiBalance, refetch: refetchBalance } = useContractRead({
     address: YOKI_CONTRACT_ADDRESS,
     chainId: 1261120,
     abi,
     functionName: "balanceOf",
     args: [address, YOKI_TOKEN_ID],
   });
+
+  useEffect(() => {
+    if (isSuccess) refetchBalance();
+  }, [refetchBalance, isSuccess]);
+
   return (
     <div className="flex flex-col justify-start items-center w-full">
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          disabled={!write}
-          onClick={() => write?.()}
-        >
-          {isLoading ? "Minting YOKI..." : "Open Capsule"}
-        </button>
+      <div>
+        <IpfsImage ipfsLink={tokenUri?.toString().slice(7) || ""} />
+        <hr />
+      </div>
       <div className="w-1/5">
-
         <p>Yoki tokens: {yokiBalance?.toString() || "?"}</p>
-
-        <div>
-          <IpfsImage ipfsLink={tokenUri?.toString().slice(7) || ""} />
-          <hr />
-        </div>
-      </div>{" "}
+      </div>
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        disabled={!write}
+        onClick={() => write?.()}
+      >
+        {isLoading ? "Minting YOKI..." : "Open Capsule"}
+      </button>
     </div>
   );
 };

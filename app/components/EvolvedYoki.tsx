@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   useAccount,
   useContractRead,
@@ -83,29 +83,46 @@ const EvolvedYoki = () => {
     args: [YOKI3_TOKEN_ID],
   });
 
-  const { data: yoki3Balance } = useContractRead({
+  const { data: yoki3Balance, refetch: refetch3 } = useContractRead({
     address: YOKI_CONTRACT_ADDRESS,
     chainId: 1261120,
     abi,
     functionName: "balanceOf",
     args: [address, YOKI1_TOKEN_ID],
   });
-  const { data: yoki4Balance } = useContractRead({
+  const { data: yoki4Balance, refetch: refetch4 } = useContractRead({
     address: YOKI_CONTRACT_ADDRESS,
     chainId: 1261120,
     abi,
     functionName: "balanceOf",
     args: [address, YOKI2_TOKEN_ID],
   });
-  const { data: yoki5Balance } = useContractRead({
+  const { data: yoki5Balance, refetch: refetch5 } = useContractRead({
     address: YOKI_CONTRACT_ADDRESS,
     chainId: 1261120,
     abi,
     functionName: "balanceOf",
     args: [address, YOKI3_TOKEN_ID],
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      refetch3();
+      refetch4();
+      refetch5();
+    }
+  }, [isSuccess, refetch3, refetch4, refetch5]);
+
   return (
-    <div>
+    <div className="flex flex-col items-center">
+      <div className="flex w-1/3 flex-col items-center">
+        <IpfsImage ipfsLink={tokenUri3?.toString().slice(7) || ""} />
+        <p className="mb-4">Yoki Mojo tokens: {yoki3Balance?.toString() || "?"}</p>
+        <IpfsImage ipfsLink={tokenUri4?.toString().slice(7) || ""} />
+        <p className="mb-4">Yoki Passion tokens: {yoki4Balance?.toString() || "?"}</p>
+        <IpfsImage ipfsLink={tokenUri5?.toString().slice(7) || ""} />
+        <p className="mb-4">Yoki Wisdom tokens: {yoki5Balance?.toString() || "?"}</p>
+      </div>
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
         disabled={!write}
@@ -113,27 +130,14 @@ const EvolvedYoki = () => {
       >
         {isLoading ? "Evolving YOKI..." : "Evolve"}
       </button>
-      <div className="w-1/5">
-        {isSuccess && (
-          <div>
-            Successfully Evolved Yoki!
-            <div>
-              <a href={`https://zkatana.blockscout.com/tx/${data?.hash}`}>BlockExplorer</a>
-            </div>
-          </div>
-        )}
-
-        <p className="w-full">Yoki1 tokens: {yoki3Balance?.toString() || "?"}</p>
-        <p>Yoki2 tokens: {yoki4Balance?.toString() || "?"}</p>
-        <p>Yoki3 tokens: {yoki5Balance?.toString() || "?"}</p>
-
+      {isSuccess && (
         <div>
-          <IpfsImage ipfsLink={tokenUri3?.toString().slice(7) || ""} />
-          <IpfsImage ipfsLink={tokenUri4?.toString().slice(7) || ""} />
-          <IpfsImage ipfsLink={tokenUri5?.toString().slice(7) || ""} />
-          <hr />
+          Successfully Evolved Yoki!
+          <div>
+            <a href={`https://zkatana.blockscout.com/tx/${data?.hash}`}>BlockExplorer</a>
+          </div>
         </div>
-      </div>{" "}
+      )}
     </div>
   );
 };
