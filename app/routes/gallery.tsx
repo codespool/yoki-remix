@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ImageCard from "../components/ImageCard";
 import {
   useAccount,
   useContractRead,
@@ -9,10 +8,8 @@ import {
   useBalance,
 } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Erc1155Mintable } from "@thirdweb-dev/sdk";
-import IpfsImage from "~/components/IpfsImage";
-import Capsule from "~/components/Capsule";
-import Oma from "~/components/Oma";
+import { Capsule } from "~/components/Capsule";
+import { Oma } from "~/components/Oma";
 import BaseYoki from "~/components/BaseYoki";
 import EvolvedYoki from "~/components/EvolvedYoki";
 

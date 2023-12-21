@@ -3,8 +3,8 @@ import { LoaderFunction, json } from "@remix-run/node";
 import { stringify } from "qs";
 import { strapiLoader } from "~/helpers/strapiLoader";
 import { useLoaderData } from "@remix-run/react";
-import Capsule from "~/components/Capsule";
-import Oma from "~/components/Oma";
+import { Capsule } from "~/components/Capsule";
+import { Oma } from "~/components/Oma";
 import BaseYoki from "~/components/BaseYoki";
 import EvolvedYoki from "~/components/EvolvedYoki";
 
@@ -27,21 +27,28 @@ export default function Evolve() {
   const fullImageUrl = `${imageUrlPrefix}${backgroundImage}`;
 
   return (
-
     <div
-      className="bg-cover bg-center h-screen w-full flex items-center justify-center flex-col"
+      className="bg-cover bg-center h-screen w-full relative"
       style={{ backgroundImage: `url(${fullImageUrl})` }}
     >
-      <div className="flex justify-between h-screen p-4">
-        <div className="w-1/5">
-          <Capsule />
-          <hr />
-          <Oma />
+      <div className="absolute top-0 left-0 right-0 flex justify-between px-[10vw] mt-[100px]">
+        <div
+          className="p-4 w-[15vw] rounded-md flex flex-col justify-evenly items-center"
+          style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
+        >
+          <Capsule showButton={false} imageSize="w-1/4" />
+          <Oma showButton={false} />
         </div>
-        <div className="w-1/5">
+        <div
+          className="p-4 w-[25vw] rounded-md"
+          style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
+        >
           <BaseYoki />
         </div>
-        <div className="w-1/5">
+        <div
+          className="p-4 w-[25vw] rounded-md"
+          style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
+        >
           <EvolvedYoki />
         </div>
       </div>

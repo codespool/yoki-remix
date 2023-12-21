@@ -73,14 +73,14 @@ const EvolvedYoki = () => {
     chainId: 1261120,
     abi,
     functionName: "uri",
-    args: [YOKI1_TOKEN_ID],
+    args: [YOKI2_TOKEN_ID],
   });
   const { data: tokenUri5 } = useContractRead({
     address: YOKI_CONTRACT_ADDRESS,
     chainId: 1261120,
     abi,
     functionName: "uri",
-    args: [YOKI1_TOKEN_ID],
+    args: [YOKI3_TOKEN_ID],
   });
 
   const { data: yoki3Balance } = useContractRead({
@@ -106,21 +106,19 @@ const EvolvedYoki = () => {
   });
   return (
     <div>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
-          disabled={!write}
-          onClick={() => write?.()}
-        >
-          {isLoading ? "Evolving YOKI..." : "Evolve"}
-        </button>
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+        disabled={!write}
+        onClick={() => write?.()}
+      >
+        {isLoading ? "Evolving YOKI..." : "Evolve"}
+      </button>
       <div className="w-1/5">
         {isSuccess && (
           <div>
             Successfully Evolved Yoki!
             <div>
-              <a href={`https://zkatana.blockscout.com/tx/${data?.hash}`}>
-                BlockExplorer
-              </a>
+              <a href={`https://zkatana.blockscout.com/tx/${data?.hash}`}>BlockExplorer</a>
             </div>
           </div>
         )}

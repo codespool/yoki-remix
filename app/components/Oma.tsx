@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   useAccount,
   useContractRead,
@@ -44,52 +44,46 @@ const YOKI_CONTRACT_ADDRESS = "0x4e14510c4DCEB04567CA5752C953c49D13254fe7";
 const OMA_TOKEN_ID = 0;
 const CAPSULE_TOKEN_ID = 1;
 
-const Capsule = () => {
-    const { address } = useAccount();
+export const Oma = ({ showButton = true }: { showButton: boolean }) => {
+  const { address } = useAccount();
 
-    const { config } = usePrepareContractWrite({
-      address: YOKI_CONTRACT_ADDRESS,
-      abi: abi,
-      functionName: "mint",
-      args: [address, OMA_TOKEN_ID, 3, "0x"],
-    });
-    const { data, write } = useContractWrite(config);
-    const { isLoading, isSuccess } = useWaitForTransaction({
-      hash: data?.hash,
-    });
+  const { config } = usePrepareContractWrite({
+    address: YOKI_CONTRACT_ADDRESS,
+    abi: abi,
+    functionName: "mint",
+    args: [address, OMA_TOKEN_ID, 3, "0x"],
+  });
+  const { data, write } = useContractWrite(config);
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+  });
 
-    const { data: omaBalance } = useContractRead({
-      address: YOKI_CONTRACT_ADDRESS,
-      chainId: 1261120,
-      abi,
-      functionName: "balanceOf",
-      args: [address, OMA_TOKEN_ID],
-    });
+  const { data: omaBalance, refetch: refetchBalance } = useContractRead({
+    address: YOKI_CONTRACT_ADDRESS,
+    chainId: 1261120,
+    abi,
+    functionName: "balanceOf",
+    args: [address, OMA_TOKEN_ID],
+  });
 
-    const { data: capsuleBalance } = useContractRead({
-      address: YOKI_CONTRACT_ADDRESS,
-      chainId: 1261120,
-      abi,
-      functionName: "balanceOf",
-      args: [address, CAPSULE_TOKEN_ID],
-    });
+  useEffect(() => {
+    if (isSuccess) refetchBalance();
+  }, [refetchBalance, isSuccess]);
+
   return (
-    <div>
-      <div className="w-1/5">
-        <div>
-          <hr />
+    <div className="w-full flex flex-col items-center justify-center">
+      <div>
+        {showButton && (
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+            className="bg-blue-700 hover:bg-blue-500 opacity-100 bg-opacity-100 text-white font-bold py-5 px-8 rounded transition-colors duration-300"
             disabled={!write}
             onClick={() => write?.()}
           >
             {isLoading ? "Minting OMA..." : "Mint OMA"}
           </button>
-          <p className="w-full">Oma tokens: {omaBalance?.toString() || "?"}</p>
-        </div>
-      </div>{" "}
+        )}
+        <p className="">Oma tokens: {omaBalance?.toString() || "?"}</p>
+      </div>
     </div>
   );
 };
-
-export default Capsule;
