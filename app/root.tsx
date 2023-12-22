@@ -1,7 +1,8 @@
 import { type LinksFunction } from "@remix-run/node";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 
-import styles from "./tailwind.css";
+import tailwindStyles from "./tailwind.css";
+import customStyles from "./custom.css";
 import questStyles from "@bandit-network/quest-widget/dist/styles.css";
 import rainbowStyles from "@rainbow-me/rainbowkit/styles.css";
 import RainbowProvider from "~/providers/RainbowProvider";
@@ -9,12 +10,13 @@ import BanditProvider from "./providers/BanditProvider";
 import { BanditSignModal } from "./components/BanditSignModal";
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: styles },
+  { rel: "stylesheet", href: tailwindStyles },
   {
     rel: "stylesheet",
     href: questStyles,
   },
   { rel: "stylesheet", href: rainbowStyles },
+  { rel: "stylesheet", href: customStyles },
 ];
 
 export default function App() {

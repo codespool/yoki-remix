@@ -84,9 +84,8 @@ export default function Layout() {
                     <Link
                       key={floor.id}
                       to={`${icon.children.endpoint}/${floor[icon.children.field]}`}
-                      className="bg-repeat-x rounded-full text-xl uppercase flex items-center justify-center h-12 w-40 mb-3 hover:font-bold"
+                      className="bg-gray-300 bg-repeat-x rounded-full text-xl uppercase flex items-center justify-center h-12 w-40 mb-3 hover:font-bold"
                       style={{
-                        backgroundImage: `url(${textBackgroundUrl})`,
                         color: navbar.data.foreground_color,
                         backgroundSize: "auto 100%",
                       }}
