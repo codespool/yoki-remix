@@ -51,6 +51,7 @@ export const loader: LoaderFunction = async () => {
 
 export default function Layout() {
   const [isSubmenuOpen, setIsSubmenuOpen] = useState<boolean>(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState<boolean>(false);
   const { navbar, floors, imgUrlPrefix } = useLoaderData<LoaderFunction>();
 
   const icons = navbar.data.icons.reduce((acc, current) => {
@@ -80,7 +81,7 @@ export default function Layout() {
         </div>
         {/* NOTEBOOK ICON */}
         <Link
-          to="/baths"
+          to="/notebook"
           className="rounded-full bg-black bg-opacity-60 border border-white border-opacity-60 flex items-center justify-center w-14 h-14 p-1 hover:border-opacity-100 hover:bg-opacity-100"
         >
           <img
@@ -99,7 +100,10 @@ export default function Layout() {
           />
         </Link>
         {/* LEADERBOARD ICON */}
-        <div className="rounded-full bg-black bg-opacity-60 border border-white border-opacity-60 flex items-center justify-center w-14 h-14 p-1 cursor-pointer hover:border-opacity-100 hover:bg-opacity-100">
+        <div
+          className="rounded-full bg-black bg-opacity-60 border border-white border-opacity-60 flex items-center justify-center w-14 h-14 p-1 cursor-pointer hover:border-opacity-100 hover:bg-opacity-100"
+          onClick={() => setIsLeaderboardOpen(true)}
+        >
           <img
             alt={`${icons.leaderboard.tooltip} icon`}
             src={`${imgUrlPrefix}${icons.leaderboard.image.url}`}
@@ -136,9 +140,222 @@ export default function Layout() {
           </div>
         )}
       </div>
-
+      {/* LEADERBOARD */}
+      <Leaderboard
+        isOpen={isLeaderboardOpen}
+        onClose={() => {
+          setIsLeaderboardOpen(false);
+        }}
+        data={sampleDataSet}
+      />
       {/* CONTENT */}
       <Outlet />
     </>
   );
 }
+
+function Leaderboard({
+  isOpen,
+  onClose,
+  data,
+}: { isOpen: boolean; onClose: () => void; data: typeof sampleDataSet }) {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <div className="bg-gradient-to-br from-blue-600 to-purple-500 rounded-lg shadow-xl overflow-hidden max-w-2xl w-full">
+        <div className="flex justify-between items-center text-white p-4">
+          <h2 className="text-2xl font-bold">Leaderboard</h2>
+          <button onClick={onClose}>✖</button>
+        </div>
+        <div className="p-4">
+          {/* Map through your data here to display content */}
+          {data.map((item) => (
+            <div key={item.id} className="flex justify-between items-center">
+              <span>{item.rank}</span>
+              <span>{item.adventurer}</span>
+              <span>{item.yokiDiscovered}</span>
+              <span>{item.knowledgeLevel}</span>
+              <span>{item.loreCollected}</span>
+            </div>
+          ))}
+        </div>
+        {/* Add additional content as needed */}
+      </div>
+    </div>
+  );
+}
+
+const sampleDataSet = [
+  {
+    id: 1,
+    rank: 1,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 12037,
+    knowledgeLevel: "Sage",
+    loreCollected: 31123,
+  },
+  {
+    id: 1,
+    rank: 2,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 12037,
+    knowledgeLevel: "Sage",
+    loreCollected: 31123,
+  },
+  {
+    id: 1,
+    rank: 3,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 12037,
+    knowledgeLevel: "Sage",
+    loreCollected: 31123,
+  },
+  {
+    id: 1,
+    rank: 4,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 12037,
+    knowledgeLevel: "Sage",
+    loreCollected: 31123,
+  },
+  {
+    id: 2,
+    rank: 5,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 9912,
+    knowledgeLevel: "Sage",
+    loreCollected: 2934,
+  },
+  {
+    id: 2,
+    rank: 6,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 9912,
+    knowledgeLevel: "Sage",
+    loreCollected: 2934,
+  },
+  {
+    id: 2,
+    rank: 7,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 9912,
+    knowledgeLevel: "Sage",
+    loreCollected: 2934,
+  },
+  {
+    id: 2,
+    rank: 8,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 9912,
+    knowledgeLevel: "Sage",
+    loreCollected: 2934,
+  },
+  {
+    id: 2,
+    rank: 9,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 9912,
+    knowledgeLevel: "Sage",
+    loreCollected: 2934,
+  },
+  {
+    id: 2,
+    rank: 10,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 9912,
+    knowledgeLevel: "Sage",
+    loreCollected: 2934,
+  },
+  {
+    id: 2,
+    rank: 11,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 9912,
+    knowledgeLevel: "Sage",
+    loreCollected: 2934,
+  },
+  {
+    id: 30,
+    rank: 12,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 422,
+    knowledgeLevel: "Aspirant",
+    loreCollected: 2934,
+  },
+  {
+    id: 30,
+    rank: 13,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 422,
+    knowledgeLevel: "Aspirant",
+    loreCollected: 2934,
+  },
+  {
+    id: 30,
+    rank: 14,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 422,
+    knowledgeLevel: "Aspirant",
+    loreCollected: 2934,
+  },
+  {
+    id: 30,
+    rank: 15,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 422,
+    knowledgeLevel: "Aspirant",
+    loreCollected: 2934,
+  },
+  {
+    id: 30,
+    rank: 16,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 422,
+    knowledgeLevel: "Aspirant",
+    loreCollected: 2934,
+  },
+  {
+    id: 30,
+    rank: 17,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 422,
+    knowledgeLevel: "Aspirant",
+    loreCollected: 2934,
+  },
+  {
+    id: 30,
+    rank: 18,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 422,
+    knowledgeLevel: "Aspirant",
+    loreCollected: 2934,
+  },
+  {
+    id: 30,
+    rank: 19,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 422,
+    knowledgeLevel: "Aspirant",
+    loreCollected: 2934,
+  },
+  {
+    id: 30,
+    rank: 20,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 422,
+    knowledgeLevel: "Aspirant",
+    loreCollected: 2934,
+  },
+  {
+    id: 30,
+    rank: 21,
+    adventurer: "0xeT3...2Hj4",
+    yokiDiscovered: 422,
+    knowledgeLevel: "Aspirant",
+    loreCollected: 2934,
+  },
+];
