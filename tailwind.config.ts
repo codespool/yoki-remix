@@ -8,7 +8,11 @@ export default {
       md: "768px",
       xl: "1440px"
     },
-    extend: {},
+    extend: {
+      fontFamily: {
+        inter: ["Inter", "sans-serif"]
+      }
+    },
   },
   plugins: [],
 } satisfies Config
