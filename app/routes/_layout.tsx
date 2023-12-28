@@ -38,11 +38,30 @@ export const loader: LoaderFunction = async () => {
     },
     { encodeValuesOnly: true },
   );
+
+  const leaderboardQuery = stringify(
+    {
+      populate: {
+        me_icon: {
+          fields: ["url"],
+        },
+        articles: {
+          fields: ["title", "summary", "link"],
+        },
+        title_icon: {
+          fields: ["url"],
+        },
+      },
+    },
+    { encodeValuesOnly: true },
+  );
   const navbarData = await strapiLoader("/navbar", navbarQuery);
   const floorData = await strapiLoader("/floors", floorsQuery);
+  const leaderboardData = await strapiLoader("/leaderboard", leaderboardQuery);
   return json({
     navbar: navbarData.apiData,
     floors: floorData.apiData,
+    leaderboard: leaderboardData.apiData,
     imgUrlPrefix: navbarData.imageUrlPrefix,
   });
 };
@@ -50,7 +69,7 @@ export const loader: LoaderFunction = async () => {
 export default function Layout() {
   const [isSubmenuOpen, setIsSubmenuOpen] = useState<boolean>(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState<boolean>(false);
-  const { navbar, floors, imgUrlPrefix } = useLoaderData<LoaderFunction>();
+  const { navbar, floors, leaderboard, imgUrlPrefix } = useLoaderData<LoaderFunction>();
 
   const icons = navbar.data.icons.reduce((acc, current) => {
     acc[current.tooltip.toLowerCase()] = current;
@@ -144,8 +163,8 @@ export default function Layout() {
         onClose={() => {
           setIsLeaderboardOpen(false);
         }}
-        iconUrl={`${imgUrlPrefix}${icons.leaderboard.image.url}`}
-        data={sampleDataSet}
+        imgUrlPrefix={imgUrlPrefix}
+        data={leaderboard.data}
       />
       {/* CONTENT */}
       <Outlet />
@@ -156,9 +175,9 @@ export default function Layout() {
 function Leaderboard({
   isOpen,
   onClose,
-  iconUrl,
+  imgUrlPrefix,
   data,
-}: { isOpen: boolean; onClose: () => void; iconUrl: string; data: typeof sampleDataSet }) {
+}: { isOpen: boolean; onClose: () => void; imgUrlPrefix: string; data: any }) {
   if (!isOpen) return null;
 
   return (
@@ -166,8 +185,9 @@ function Leaderboard({
       className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center p-4 z-50"
       onClick={onClose}
     >
-      <div
-        className="
+      <div>
+        <div
+          className="
         bg-astar-gradient
         backdrop-blur
         border border-[#BAF7FF] border-opacity-40
@@ -178,36 +198,73 @@ function Leaderboard({
         px-12 
         py-8
         overflow-y-scroll"
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        <div className="flex items-center justify-center text-white p-4 space-x-8">
-          <h1 className="text-3xl font-inter font-bold">Leaderboard</h1>
-          <div className="mt-[-10px]">
-            <img alt="leaderboard icon" src={iconUrl} />
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <div className="flex items-center justify-center text-white p-4 space-x-8">
+            <h1 className="text-3xl font-inter font-bold">Leaderboard</h1>
+            <div className="mt-[-10px]">
+              <img alt="leaderboard icon" src={`${imgUrlPrefix}${data.title_icon.url}`} />
+            </div>
           </div>
-        </div>
-        <TableRow>
-          <TableCell data="Rank" size="s" isHeader />
-          <TableCell data="Adventurer" size="m" isHeader />
-          <TableCell data="Yoki Discovered" size="m" isHeader />
-          <TableCell data="Knowledge Level" size="m" isHeader />
-          <TableCell data="Lore Collected" size="m" isHeader />
-        </TableRow>
-
-        {/* Map through your data here to display content */}
-        {data.map((item) => (
-          <TableRow key={item.id}>
-            <TableCell data={item.rank} size="s" isMe={item.id === 10} />
-            <TableCell data={item.adventurer} size="m" isMe={item.id === 10} />
-            <TableCell data={item.yokiDiscovered} size="m" isMe={item.id === 10} />
-            <TableCell data={item.knowledgeLevel} size="m" isMe={item.id === 10} />
-            <TableCell data={item.loreCollected} size="m" isMe={item.id === 10} />
-            {item.id === 10 && <div className="absolute left-10">ME</div>}
+          <TableRow>
+            <TableCell data="Rank" size="s" isHeader />
+            <TableCell data="Adventurer" size="m" isHeader />
+            <TableCell data="Yoki Discovered" size="m" isHeader />
+            <TableCell data="Knowledge Level" size="m" isHeader />
+            <TableCell data="Lore Collected" size="m" isHeader />
           </TableRow>
-        ))}
+
+          {/* Map through your data here to display content */}
+          {data.leaderboard_data.map((item) => (
+            <TableRow key={item.id}>
+              <TableCell data={item.rank} size="s" isMe={item.id === 10} />
+              <TableCell data={item.adventurer} size="m" isMe={item.id === 10} />
+              <TableCell data={item.yokiDiscovered} size="m" isMe={item.id === 10} />
+              <TableCell data={item.knowledgeLevel} size="m" isMe={item.id === 10} />
+              <TableCell data={item.loreCollected} size="m" isMe={item.id === 10} />
+              {item.id === 10 && (
+                <div className="absolute left-2 h-8 w-8 rounded-full border border-white bg-black bg-opacity-60">
+                  <img src={`${imgUrlPrefix}${data.me_icon.url}`} alt="" />
+                </div>
+              )}
+            </TableRow>
+          ))}
+        </div>
+        <div className="flex space-x-6 mt-6 max-w-[60vw] max-h-[20vh]">
+          {data.articles.map((article) => (
+            <Article articleData={article} />
+          ))}
+        </div>
       </div>
+    </div>
+  );
+}
+
+function Article({
+  articleData,
+}: { articleData: { title: string; summary: string; link: string } }) {
+  return (
+    <div
+      className="
+      backdrop-blur
+      bg-gradient-to-b from-[rgba(255,255,255,0.6)] to-[rgba(255,255,255,0.2)] 
+      w-1/3
+      p-4
+      rounded-lg
+      border border-white border-opacity-40
+      font-inter
+      text-white
+      "
+    >
+      <h2 className="font-bold">{articleData.title}</h2>
+      <p className="text-sm my-2">{articleData.summary}</p>
+      {articleData.link && (
+        <a className="text-sm" href={articleData.link}>
+          Learn more here.
+        </a>
+      )}
     </div>
   );
 }
@@ -275,174 +332,3 @@ function TableCell({
     </div>
   );
 }
-
-const sampleDataSet = [
-  {
-    id: 1,
-    rank: 1,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 12037,
-    knowledgeLevel: "Sage",
-    loreCollected: 31123,
-  },
-  {
-    id: 2,
-    rank: 2,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 12037,
-    knowledgeLevel: "Sage",
-    loreCollected: 31123,
-  },
-  {
-    id: 3,
-    rank: 3,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 12037,
-    knowledgeLevel: "Virtuoso",
-    loreCollected: 31123,
-  },
-  {
-    id: 4,
-    rank: 4,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 12037,
-    knowledgeLevel: "Virtuoso",
-    loreCollected: 31123,
-  },
-  {
-    id: 5,
-    rank: 5,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 9912,
-    knowledgeLevel: "Authority",
-    loreCollected: 2934,
-  },
-  {
-    id: 6,
-    rank: 6,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 9912,
-    knowledgeLevel: "Authority",
-    loreCollected: 2934,
-  },
-  {
-    id: 7,
-    rank: 7,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 9912,
-    knowledgeLevel: "Scholar",
-    loreCollected: 2934,
-  },
-  {
-    id: 8,
-    rank: 8,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 9912,
-    knowledgeLevel: "Scholar",
-    loreCollected: 2934,
-  },
-  {
-    id: 9,
-    rank: 9,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 9912,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 10,
-    rank: 10,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 9912,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 11,
-    rank: 11,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 9912,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 12,
-    rank: 12,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 422,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 13,
-    rank: 13,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 422,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 14,
-    rank: 14,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 422,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 15,
-    rank: 15,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 422,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 16,
-    rank: 16,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 422,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 17,
-    rank: 17,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 422,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 18,
-    rank: 18,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 422,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 19,
-    rank: 19,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 422,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 20,
-    rank: 20,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 422,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-  {
-    id: 21,
-    rank: 21,
-    adventurer: "0xeT3...2Hj4",
-    yokiDiscovered: 422,
-    knowledgeLevel: "Aspirant",
-    loreCollected: 2934,
-  },
-];
