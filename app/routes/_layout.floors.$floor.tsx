@@ -41,6 +41,14 @@ export default function Floor() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
+  const disableBodyScroll = () => {
+    document.body.style.overflow = "hidden";
+  };
+
+  const enableBodyScroll = () => {
+    document.body.style.overflow = "";
+  };
+
   const updateScrollProgress = () => {
     const scrollContainerDiv = scrollContainerRef.current;
     if (scrollContainerDiv) {
@@ -206,6 +214,8 @@ export default function Floor() {
                         transition: "width 0.3s ease",
                       }}
                       onScroll={(event) => event.stopPropagation()}
+                      onMouseEnter={disableBodyScroll}
+                      onMouseLeave={enableBodyScroll}
                     >
                       <p className="p-4 font-bold text-xl capitalize">{machine.title}</p>
                       <p className="p-4">{machine.description}</p>

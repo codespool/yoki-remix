@@ -38,10 +38,8 @@ export const loader: LoaderFunction = async () => {
     },
     { encodeValuesOnly: true },
   );
-  console.log(floorsQuery);
   const navbarData = await strapiLoader("/navbar", navbarQuery);
   const floorData = await strapiLoader("/floors", floorsQuery);
-  console.log(floorData);
   return json({
     navbar: navbarData.apiData,
     floors: floorData.apiData,
@@ -146,6 +144,7 @@ export default function Layout() {
         onClose={() => {
           setIsLeaderboardOpen(false);
         }}
+        iconUrl={`${imgUrlPrefix}${icons.leaderboard.image.url}`}
         data={sampleDataSet}
       />
       {/* CONTENT */}
@@ -157,34 +156,122 @@ export default function Layout() {
 function Leaderboard({
   isOpen,
   onClose,
+  iconUrl,
   data,
-}: { isOpen: boolean; onClose: () => void; data: typeof sampleDataSet }) {
+}: { isOpen: boolean; onClose: () => void; iconUrl: string; data: typeof sampleDataSet }) {
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center p-4 z-50"
       onClick={onClose}
     >
-      <div className="bg-gradient-to-br from-blue-600 to-purple-500 rounded-lg shadow-xl overflow-hidden max-w-2xl w-full">
-        <div className="flex justify-between items-center text-white p-4">
-          <h2 className="text-2xl font-bold">Leaderboard</h2>
-          <button onClick={onClose}>✖</button>
+      <div
+        className="
+        bg-astar-gradient
+        backdrop-blur
+        border border-[#BAF7FF] border-opacity-40
+        rounded-lg
+        max-w-[60vw]
+        w-full
+        max-h-[40vh]
+        px-12 
+        py-8
+        overflow-y-scroll"
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <div className="flex items-center justify-center text-white p-4 space-x-8">
+          <h1 className="text-3xl font-inter font-bold">Leaderboard</h1>
+          <div className="mt-[-10px]">
+            <img alt="leaderboard icon" src={iconUrl} />
+          </div>
         </div>
-        <div className="p-4">
-          {/* Map through your data here to display content */}
-          {data.map((item) => (
-            <div key={item.id} className="flex justify-between items-center">
-              <span>{item.rank}</span>
-              <span>{item.adventurer}</span>
-              <span>{item.yokiDiscovered}</span>
-              <span>{item.knowledgeLevel}</span>
-              <span>{item.loreCollected}</span>
-            </div>
-          ))}
-        </div>
-        {/* Add additional content as needed */}
+        <TableRow>
+          <TableCell data="Rank" size="s" isHeader />
+          <TableCell data="Adventurer" size="m" isHeader />
+          <TableCell data="Yoki Discovered" size="m" isHeader />
+          <TableCell data="Knowledge Level" size="m" isHeader />
+          <TableCell data="Lore Collected" size="m" isHeader />
+        </TableRow>
+
+        {/* Map through your data here to display content */}
+        {data.map((item) => (
+          <TableRow key={item.id}>
+            <TableCell data={item.rank} size="s" isMe={item.id === 10} />
+            <TableCell data={item.adventurer} size="m" isMe={item.id === 10} />
+            <TableCell data={item.yokiDiscovered} size="m" isMe={item.id === 10} />
+            <TableCell data={item.knowledgeLevel} size="m" isMe={item.id === 10} />
+            <TableCell data={item.loreCollected} size="m" isMe={item.id === 10} />
+            {item.id === 10 && <div className="absolute left-10">ME</div>}
+          </TableRow>
+        ))}
       </div>
+    </div>
+  );
+}
+
+function TableRow({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="flex justify-evenly items-center text-white m-1 font-inter space-x-2">
+      {children}
+    </div>
+  );
+}
+
+function TableCell({
+  data,
+  size,
+  isHeader,
+  isMe,
+}: { data: string | number; size: "s" | "m"; isHeader?: boolean; isMe?: boolean }) {
+  const getBg = () => {
+    if (isHeader) return "";
+
+    const rankColors: Record<string, string> = {
+      sage: `bg-[#E9A500] bg-opacity-60 border ${
+        isMe ? "border border-white" : "border-[#E9A500]"
+      } border-opacity-100`,
+      virtuoso: `bg-[#E96200] bg-opacity-60 border ${
+        isMe ? "border border-white" : "border-[#E96200]"
+      } border-opacity-100`,
+      authority: `bg-[#EA0D0D] bg-opacity-60 border ${
+        isMe ? "border border-white" : "border-[#D61D1D]"
+      } border-opacity-100`,
+      scholar: `bg-[#1737DE] bg-opacity-60 border ${
+        isMe ? "border border-white" : "border-[#1D69FD]"
+      } border-opacity-100`,
+      aspirant: `bg-[#049034] bg-opacity-60 border ${
+        isMe ? "border border-white" : "border-[#11A845]"
+      } border-opacity-100`,
+    };
+    if (typeof data === "string" && rankColors[data.toLowerCase()]) {
+      const rankColor = rankColors[data.toLowerCase()];
+      console.log(data, rankColor);
+      return rankColor;
+    }
+    return `bg-black bg-opacity-60 ${isMe ? "border border-white" : ""}`;
+  };
+
+  return (
+    <div
+      className={`
+      ${getBg()}
+      rounded-full 
+      ${size === "s" ? "w-16" : "w-48"}
+      flex
+      justify-center
+      items-center
+      p-1
+      `}
+    >
+      <span
+        className={`
+      font-${isHeader ? "semibold" : "normal"}]`}
+      >
+        {data}
+      </span>
     </div>
   );
 }
@@ -199,7 +286,7 @@ const sampleDataSet = [
     loreCollected: 31123,
   },
   {
-    id: 1,
+    id: 2,
     rank: 2,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 12037,
@@ -207,79 +294,79 @@ const sampleDataSet = [
     loreCollected: 31123,
   },
   {
-    id: 1,
+    id: 3,
     rank: 3,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 12037,
-    knowledgeLevel: "Sage",
+    knowledgeLevel: "Virtuoso",
     loreCollected: 31123,
   },
   {
-    id: 1,
+    id: 4,
     rank: 4,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 12037,
-    knowledgeLevel: "Sage",
+    knowledgeLevel: "Virtuoso",
     loreCollected: 31123,
   },
   {
-    id: 2,
+    id: 5,
     rank: 5,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 9912,
-    knowledgeLevel: "Sage",
+    knowledgeLevel: "Authority",
     loreCollected: 2934,
   },
   {
-    id: 2,
+    id: 6,
     rank: 6,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 9912,
-    knowledgeLevel: "Sage",
+    knowledgeLevel: "Authority",
     loreCollected: 2934,
   },
   {
-    id: 2,
+    id: 7,
     rank: 7,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 9912,
-    knowledgeLevel: "Sage",
+    knowledgeLevel: "Scholar",
     loreCollected: 2934,
   },
   {
-    id: 2,
+    id: 8,
     rank: 8,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 9912,
-    knowledgeLevel: "Sage",
+    knowledgeLevel: "Scholar",
     loreCollected: 2934,
   },
   {
-    id: 2,
+    id: 9,
     rank: 9,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 9912,
-    knowledgeLevel: "Sage",
+    knowledgeLevel: "Aspirant",
     loreCollected: 2934,
   },
   {
-    id: 2,
+    id: 10,
     rank: 10,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 9912,
-    knowledgeLevel: "Sage",
+    knowledgeLevel: "Aspirant",
     loreCollected: 2934,
   },
   {
-    id: 2,
+    id: 11,
     rank: 11,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 9912,
-    knowledgeLevel: "Sage",
+    knowledgeLevel: "Aspirant",
     loreCollected: 2934,
   },
   {
-    id: 30,
+    id: 12,
     rank: 12,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 422,
@@ -287,7 +374,7 @@ const sampleDataSet = [
     loreCollected: 2934,
   },
   {
-    id: 30,
+    id: 13,
     rank: 13,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 422,
@@ -295,7 +382,7 @@ const sampleDataSet = [
     loreCollected: 2934,
   },
   {
-    id: 30,
+    id: 14,
     rank: 14,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 422,
@@ -303,7 +390,7 @@ const sampleDataSet = [
     loreCollected: 2934,
   },
   {
-    id: 30,
+    id: 15,
     rank: 15,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 422,
@@ -311,7 +398,7 @@ const sampleDataSet = [
     loreCollected: 2934,
   },
   {
-    id: 30,
+    id: 16,
     rank: 16,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 422,
@@ -319,7 +406,7 @@ const sampleDataSet = [
     loreCollected: 2934,
   },
   {
-    id: 30,
+    id: 17,
     rank: 17,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 422,
@@ -327,7 +414,7 @@ const sampleDataSet = [
     loreCollected: 2934,
   },
   {
-    id: 30,
+    id: 18,
     rank: 18,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 422,
@@ -335,7 +422,7 @@ const sampleDataSet = [
     loreCollected: 2934,
   },
   {
-    id: 30,
+    id: 19,
     rank: 19,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 422,
@@ -343,7 +430,7 @@ const sampleDataSet = [
     loreCollected: 2934,
   },
   {
-    id: 30,
+    id: 20,
     rank: 20,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 422,
@@ -351,7 +438,7 @@ const sampleDataSet = [
     loreCollected: 2934,
   },
   {
-    id: 30,
+    id: 21,
     rank: 21,
     adventurer: "0xeT3...2Hj4",
     yokiDiscovered: 422,
