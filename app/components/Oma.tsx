@@ -5,8 +5,8 @@ import {
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
-  useBalance,
 } from "wagmi";
+import { TokenMetadata } from "~/routes/_layout.baths";
 
 const abi = [
   {
@@ -42,9 +42,18 @@ const abi = [
 
 const YOKI_CONTRACT_ADDRESS = "0x4e14510c4DCEB04567CA5752C953c49D13254fe7";
 const OMA_TOKEN_ID = 0;
-const CAPSULE_TOKEN_ID = 1;
 
-export const Oma = ({ showButton = true }: { showButton: boolean }) => {
+export const Oma = ({
+  showButton = true,
+  imageSize,
+  tokenMetadata,
+  imageUrlPrefix,
+}: {
+  showButton: boolean;
+  imageSize: string | null;
+  tokenMetadata: TokenMetadata;
+  imageUrlPrefix: string;
+}) => {
   const { address } = useAccount();
 
   const { config } = usePrepareContractWrite({
@@ -70,19 +79,27 @@ export const Oma = ({ showButton = true }: { showButton: boolean }) => {
     if (isSuccess) refetchBalance();
   }, [refetchBalance, isSuccess]);
 
+  const tokenImage = tokenMetadata?.data?.images.find(
+    (image) => image.token_id === OMA_TOKEN_ID,
+  )?.token_image;
+
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <div>
-        {showButton && (
-          <button
-            className="bg-blue-700 hover:bg-blue-500 opacity-100 bg-opacity-100 text-white font-bold py-5 px-8 rounded transition-colors duration-300"
-            disabled={!write}
-            onClick={() => write?.()}
-          >
-            {isLoading ? "Minting OMA..." : "Mint OMA"}
-          </button>
-        )}
+      {showButton && (
+        <button
+          className="bg-blue-700 hover:bg-blue-500 opacity-100 bg-opacity-100 text-white font-bold py-5 px-8 rounded transition-colors duration-300"
+          disabled={!write}
+          onClick={() => write?.()}
+        >
+          {isLoading ? "Minting OMA..." : "Mint OMA"}
+        </button>
+      )}
+
+      <div className="flex flex-col items-center align-middle">
         <p className="">Oma tokens: {omaBalance?.toString() || "?"}</p>
+        <div className={`${imageSize ?? ""} bg-white rounded-full border border-slate-500`}>
+          <img src={`${imageUrlPrefix}${tokenImage?.url}`} alt={`${tokenImage?.name}`} />
+        </div>
       </div>
     </div>
   );

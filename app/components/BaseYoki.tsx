@@ -8,7 +8,7 @@ import {
   useBalance,
 } from "wagmi";
 
-import IpfsImage from "~/components/IpfsImage";
+import { TokenMetadata } from "~/routes/_layout.baths";
 
 const abi = [
   {
@@ -45,7 +45,10 @@ const abi = [
 const YOKI_CONTRACT_ADDRESS = "0x4e14510c4DCEB04567CA5752C953c49D13254fe7";
 const YOKI_TOKEN_ID = 2;
 
-const BaseYoki = () => {
+const BaseYoki = ({
+  tokenMetadata,
+  imageUrlPrefix,
+}: { tokenMetadata: TokenMetadata; imageUrlPrefix: string }) => {
   const { address } = useAccount();
 
   const { config } = usePrepareContractWrite({
@@ -79,14 +82,17 @@ const BaseYoki = () => {
     if (isSuccess) refetchBalance();
   }, [refetchBalance, isSuccess]);
 
+  const tokenImage = tokenMetadata?.data?.images.find(
+    (image) => image.token_id === YOKI_TOKEN_ID,
+  )?.token_image;
+
   return (
     <div className="flex flex-col justify-start items-center w-full">
-      <div>
-        <IpfsImage ipfsLink={tokenUri?.toString().slice(7) || ""} />
-        <hr />
-      </div>
-      <div className="w-1/5">
-        <p>Yoki tokens: {yokiBalance?.toString() || "?"}</p>
+      <div className="flex flex-col items-center align-middle">
+        <p className="">Base Yoki tokens: {yokiBalance?.toString() || "?"}</p>
+        <div className="w-1/2">
+          <img src={`${imageUrlPrefix}${tokenImage?.url}`} alt={`${tokenImage?.name}`} />
+        </div>
       </div>
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

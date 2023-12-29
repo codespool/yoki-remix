@@ -5,10 +5,9 @@ import {
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
-  useBalance,
 } from "wagmi";
 
-import IpfsImage from "~/components/IpfsImage";
+import { TokenMetadata } from "~/routes/_layout.baths";
 
 const abi = [
   {
@@ -47,7 +46,10 @@ const YOKI1_TOKEN_ID = 3;
 const YOKI2_TOKEN_ID = 4;
 const YOKI3_TOKEN_ID = 5;
 
-const EvolvedYoki = () => {
+const EvolvedYoki = ({
+  tokenMetadata,
+  imageUrlPrefix,
+}: { tokenMetadata: TokenMetadata; imageUrlPrefix: string }) => {
   const { address } = useAccount();
 
   const { config } = usePrepareContractWrite({
@@ -113,15 +115,37 @@ const EvolvedYoki = () => {
     }
   }, [isSuccess, refetch3, refetch4, refetch5]);
 
+  const tokenImage1 = tokenMetadata?.data?.images.find(
+    (image) => image.token_id === YOKI1_TOKEN_ID,
+  )?.token_image;
+
+  const tokenImage2 = tokenMetadata?.data?.images.find(
+    (image) => image.token_id === YOKI2_TOKEN_ID,
+  )?.token_image;
+
+  const tokenImage3 = tokenMetadata?.data?.images.find(
+    (image) => image.token_id === YOKI3_TOKEN_ID,
+  )?.token_image;
+
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex w-1/3 flex-col items-center">
-        <IpfsImage ipfsLink={tokenUri3?.toString().slice(7) || ""} />
-        <p className="mb-4">Yoki Mojo tokens: {yoki3Balance?.toString() || "?"}</p>
-        <IpfsImage ipfsLink={tokenUri4?.toString().slice(7) || ""} />
-        <p className="mb-4">Yoki Passion tokens: {yoki4Balance?.toString() || "?"}</p>
-        <IpfsImage ipfsLink={tokenUri5?.toString().slice(7) || ""} />
-        <p className="mb-4">Yoki Wisdom tokens: {yoki5Balance?.toString() || "?"}</p>
+    <div className="flex flex-col items-center space-y-8">
+      <div className="flex flex-col items-center align-middle">
+        <p className="">Mojo Yoki tokens: {yoki3Balance?.toString() || "?"}</p>
+        <div className="w-1/3">
+          <img src={`${imageUrlPrefix}${tokenImage1?.url}`} alt={`${tokenImage1?.name}`} />
+        </div>
+      </div>
+      <div className="flex flex-col items-center align-middle">
+        <p className="">Passion Yoki tokens: {yoki4Balance?.toString() || "?"}</p>
+        <div className="w-1/3">
+          <img src={`${imageUrlPrefix}${tokenImage2?.url}`} alt={`${tokenImage2?.name}`} />
+        </div>
+      </div>
+      <div className="flex flex-col items-center align-middle">
+        <p className="">Wisdom Yoki tokens: {yoki5Balance?.toString() || "?"}</p>
+        <div className="w-1/3">
+          <img src={`${imageUrlPrefix}${tokenImage3?.url}`} alt={`${tokenImage3?.name}`} />
+        </div>
       </div>
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
