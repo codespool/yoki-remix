@@ -2,7 +2,6 @@ import { json, type ActionFunctionArgs } from "@remix-run/node"; // or cloudflar
 import { createWalletClient, encodePacked, http, keccak256, publicActions, toBytes } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { astarZkatana } from "viem/chains";
-import { Buffer } from "buffer";
 
 const RPC = process.env.RPC;
 const WALLET_KEY = process.env.WALLET_KEY;
