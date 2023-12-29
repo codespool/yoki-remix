@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   useAccount,
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
-  useBalance,
 } from "wagmi";
-import IpfsImage from "~/components/IpfsImage";
 import { TokenMetadata } from "~/routes/_layout.baths";
 
 const abi = [
@@ -50,7 +48,13 @@ export const Capsule = ({
   showButton = true,
   imageSize = "w-1/2",
   tokenMetadata,
-}: { showButton: boolean; imageSize: string; tokenMetadata: TokenMetadata }) => {
+  imageUrlPrefix,
+}: {
+  showButton: boolean;
+  imageSize: string;
+  tokenMetadata: TokenMetadata;
+  imageUrlPrefix: string;
+}) => {
   const { address } = useAccount();
 
   const { config } = usePrepareContractWrite({
@@ -84,6 +88,10 @@ export const Capsule = ({
     if (isSuccess) refetchBalance();
   }, [refetchBalance, isSuccess]);
 
+  const tokenImage = tokenMetadata?.data?.images.find(
+    (image) => image.token_id === CAPSULE_TOKEN_ID,
+  )?.token_image;
+
   return (
     <div className="w-full flex flex-col items-center justify-center">
       {showButton && (
@@ -95,11 +103,11 @@ export const Capsule = ({
           {isLoading ? "Minting CAPSULE..." : "Mint Capsule"}
         </button>
       )}
-      <p>Capsule tokens: {capsuleBalance?.toString() || "?"}</p>
-
-      <div className={imageSize}>
-        <IpfsImage ipfsLink={tokenUri?.toString().slice(7) || ""} />
-        <hr />
+      <div className="flex flex-col items-center align-middle">
+        <p className="">Capsule tokens: {capsuleBalance?.toString() || "?"}</p>
+        <div className={`${imageSize ?? ""}`}>
+          <img src={`${imageUrlPrefix}${tokenImage?.url}`} alt={`${tokenImage?.name}`} />
+        </div>
       </div>
     </div>
   );

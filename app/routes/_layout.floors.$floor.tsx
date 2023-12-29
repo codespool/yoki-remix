@@ -5,6 +5,7 @@ import BanditQuest from "~/components/BanditQuest";
 import { strapiLoader } from "~/helpers/strapiLoader";
 import { Oma } from "~/components/Oma";
 import { Capsule } from "~/components/Capsule";
+import { stringify } from "qs";
 type ImageData = {
   url: string;
   name: string;
@@ -28,8 +29,24 @@ type floorData = {
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
-  const response = await strapiLoader<floorData>(`/floors/${params.floor}`);
-  return json(response);
+  const tokenMetadataQuery = stringify(
+    {
+      populate: {
+        images: {
+          populate: {
+            token_image: {
+              fields: ["url", "name"],
+            },
+          },
+        },
+      },
+    },
+    { encodeValuesOnly: true },
+  );
+  const { apiData: tokenMetadata } = await strapiLoader("/nft-image", tokenMetadataQuery);
+
+  const pageData = await strapiLoader<floorData>(`/floors/${params.floor}`);
+  return json({ ...pageData, tokenMetadata });
 };
 
 export default function Floor() {
@@ -37,7 +54,7 @@ export default function Floor() {
   const [lastBackgroundPosition, setLastBackgroundPosition] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const { apiData, imageUrlPrefix } = useLoaderData<LoaderFunction>();
+  const { apiData, imageUrlPrefix, tokenMetadata } = useLoaderData<LoaderFunction>();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
@@ -219,7 +236,12 @@ export default function Floor() {
                     >
                       <p className="p-4 font-bold text-xl capitalize">{machine.title}</p>
                       <p className="p-4">{machine.description}</p>
-                      <Capsule showButton={true} imageSize="w-1/2" />
+                      <Capsule
+                        showButton={true}
+                        imageSize="w-1/2"
+                        tokenMetadata={tokenMetadata}
+                        imageUrlPrefix={imageUrlPrefix}
+                      />
                     </div>
                   </div>
                 );
@@ -248,7 +270,12 @@ export default function Floor() {
                     >
                       <p className="p-4 font-bold text-xl capitalize">{machine.title}</p>
                       <p className="p-4">{machine.description}</p>
-                      <Oma showButton={true} />
+                      <Oma
+                        showButton={true}
+                        imageSize="w-1/2"
+                        tokenMetadata={tokenMetadata}
+                        imageUrlPrefix={imageUrlPrefix}
+                      />
                     </div>
                   </div>
                 );

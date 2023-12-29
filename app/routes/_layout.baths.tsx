@@ -30,9 +30,8 @@ export const loader: LoaderFunction = async () => {
     },
     { encodeValuesOnly: true },
   );
-  console.log("tokenMetadataQuery", tokenMetadataQuery);
   const pageData = await strapiLoader("/baths-page", query);
-  const { apiData: tokenMetadata } = await strapiLoader("/token-metadata", tokenMetadataQuery);
+  const { apiData: tokenMetadata } = await strapiLoader("/nft-image", tokenMetadataQuery);
   return json({ ...pageData, tokenMetadata });
 };
 
@@ -54,22 +53,34 @@ export default function Baths() {
         >
           <Capsule
             showButton={false}
-            imageSize="w-1/4"
+            imageSize="w-1/2"
             tokenMetadata={tokenMetadata as TokenMetadata}
+            imageUrlPrefix={imageUrlPrefix}
           />
-          <Oma showButton={false} tokenMetadata={tokenMetadata as TokenMetadata} />
+          <Oma
+            showButton={false}
+            imageSize="w-1/2"
+            tokenMetadata={tokenMetadata as TokenMetadata}
+            imageUrlPrefix={imageUrlPrefix}
+          />
         </div>
         <div
           className="p-4 w-[25vw] rounded-md"
           style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
         >
-          <BaseYoki tokenMetadata={tokenMetadata as TokenMetadata} />
+          <BaseYoki
+            tokenMetadata={tokenMetadata as TokenMetadata}
+            imageUrlPrefix={imageUrlPrefix}
+          />
         </div>
         <div
           className="p-4 w-[25vw] rounded-md"
           style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
         >
-          <EvolvedYoki tokenMetadata={tokenMetadata as TokenMetadata} />
+          <EvolvedYoki
+            tokenMetadata={tokenMetadata as TokenMetadata}
+            imageUrlPrefix={imageUrlPrefix}
+          />
         </div>
       </div>
     </div>
