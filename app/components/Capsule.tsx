@@ -8,6 +8,7 @@ import {
   useBalance,
 } from "wagmi";
 import IpfsImage from "~/components/IpfsImage";
+import { TokenMetadata } from "~/routes/_layout.baths";
 
 const abi = [
   {
@@ -48,7 +49,8 @@ const CAPSULE_TOKEN_ID = 1;
 export const Capsule = ({
   showButton = true,
   imageSize = "w-1/2",
-}: { showButton: boolean; imageSize: string }) => {
+  tokenMetadata,
+}: { showButton: boolean; imageSize: string; tokenMetadata: TokenMetadata }) => {
   const { address } = useAccount();
 
   const { config } = usePrepareContractWrite({

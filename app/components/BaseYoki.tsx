@@ -9,6 +9,7 @@ import {
 } from "wagmi";
 
 import IpfsImage from "~/components/IpfsImage";
+import { TokenMetadata } from "~/routes/_layout.baths";
 
 const abi = [
   {
@@ -45,7 +46,7 @@ const abi = [
 const YOKI_CONTRACT_ADDRESS = "0x4e14510c4DCEB04567CA5752C953c49D13254fe7";
 const YOKI_TOKEN_ID = 2;
 
-const BaseYoki = () => {
+const BaseYoki = ({ tokenMetadata }: { tokenMetadata: TokenMetadata }) => {
   const { address } = useAccount();
 
   const { config } = usePrepareContractWrite({

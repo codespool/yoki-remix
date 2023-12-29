@@ -7,6 +7,7 @@ import {
   useWaitForTransaction,
   useBalance,
 } from "wagmi";
+import { TokenMetadata } from "~/routes/_layout.baths";
 
 const abi = [
   {
@@ -44,7 +45,10 @@ const YOKI_CONTRACT_ADDRESS = "0x4e14510c4DCEB04567CA5752C953c49D13254fe7";
 const OMA_TOKEN_ID = 0;
 const CAPSULE_TOKEN_ID = 1;
 
-export const Oma = ({ showButton = true }: { showButton: boolean }) => {
+export const Oma = ({
+  showButton = true,
+  tokenMetadata,
+}: { showButton: boolean; tokenMetadata: TokenMetadata }) => {
   const { address } = useAccount();
 
   const { config } = usePrepareContractWrite({

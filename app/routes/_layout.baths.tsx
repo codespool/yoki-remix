@@ -16,12 +16,28 @@ export const loader: LoaderFunction = async () => {
       },
     },
   });
-  const apiData = await strapiLoader("/baths-page", query);
-  return json(apiData);
+  const tokenMetadataQuery = stringify(
+    {
+      populate: {
+        images: {
+          populate: {
+            token_image: {
+              fields: ["url", "name"],
+            },
+          },
+        },
+      },
+    },
+    { encodeValuesOnly: true },
+  );
+  console.log("tokenMetadataQuery", tokenMetadataQuery);
+  const pageData = await strapiLoader("/baths-page", query);
+  const { apiData: tokenMetadata } = await strapiLoader("/token-metadata", tokenMetadataQuery);
+  return json({ ...pageData, tokenMetadata });
 };
 
 export default function Baths() {
-  const { apiData, imageUrlPrefix } = useLoaderData<LoaderFunction>();
+  const { apiData, imageUrlPrefix, tokenMetadata } = useLoaderData<LoaderFunction>();
 
   const backgroundImage = apiData.data.background_image.url;
   const fullImageUrl = `${imageUrlPrefix}${backgroundImage}`;
@@ -36,22 +52,46 @@ export default function Baths() {
           className="p-4 w-[15vw] rounded-md flex flex-col justify-evenly items-center"
           style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
         >
-          <Capsule showButton={false} imageSize="w-1/4" />
-          <Oma showButton={false} />
+          <Capsule
+            showButton={false}
+            imageSize="w-1/4"
+            tokenMetadata={tokenMetadata as TokenMetadata}
+          />
+          <Oma showButton={false} tokenMetadata={tokenMetadata as TokenMetadata} />
         </div>
         <div
           className="p-4 w-[25vw] rounded-md"
           style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
         >
-          <BaseYoki />
+          <BaseYoki tokenMetadata={tokenMetadata as TokenMetadata} />
         </div>
         <div
           className="p-4 w-[25vw] rounded-md"
           style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
         >
-          <EvolvedYoki />
+          <EvolvedYoki tokenMetadata={tokenMetadata as TokenMetadata} />
         </div>
       </div>
     </div>
   );
 }
+
+export type TokenMetadata = {
+  data: {
+    id: number;
+    images: TokenImage[];
+  };
+};
+
+type TokenImage = {
+  id: number;
+  token_id: number;
+  token_name: string;
+  contract_address: string;
+  ipfs_link: string;
+  token_image: {
+    id: number;
+    url: string;
+    name: string;
+  };
+};
