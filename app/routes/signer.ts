@@ -35,11 +35,10 @@ async function signMessage({ to, tokenId, quantity, contractAddress }: ContractD
     [to, BigInt(tokenId), BigInt(quantity), BigInt(nonce), contractAddress],
   );
   const hash = keccak256(encodedMessage);
-  const hashBytes = toBytes(hash);
 
-  const signedMessage = await client.signMessage({ account, message: { raw: hashBytes } });
+  const signedMessage = await client.signMessage({ account, message: hash });
 
-  return { signedMessage, hashBytes, nonce };
+  return { signedMessage, nonce, hash };
 }
 
 type ContractDetails = {
