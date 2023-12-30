@@ -1,25 +1,19 @@
 import React, { useEffect } from "react";
-import { parseAbi } from "viem";
-import {
-  useAccount,
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-} from "wagmi";
+import { abi } from "./abi";
+import { useAccount, useContractRead, useContractWrite, useWaitForTransaction } from "wagmi";
 import { TokenMetadata } from "~/routes/_layout.baths";
 
-const abi = parseAbi([
-  "function mint(address, uint256, uint256, bytes)",
-  "function setEvolutionPath(uint256, uint256[], uint256, uint256)",
-  "function setActiveYokiClaim(uint256[])",
-  "function isEvolutionToken(uint256)",
-  "function uri(uint256)",
-  "function setURI(string)",
-  "function name()",
-  "function balanceOf(address, uint256)",
-  "function mintWithSignature(bytes32, address, uint256, uint256, uint256, bytes)",
-]);
+// const abi = parseAbi([
+//   "function mint(address, uint256, uint256, bytes)",
+//   "function setEvolutionPath(uint256, uint256[], uint256, uint256)",
+//   "function setActiveYokiClaim(uint256[])",
+//   "function isEvolutionToken(uint256)",
+//   "function uri(uint256)",
+//   "function setURI(string)",
+//   "function name()",
+//   "function balanceOf(address, uint256)",
+//   "function mintWithSignature(bytes32, address, uint256, uint256, uint256, bytes)",
+// ]);
 
 const YOKI_CONTRACT_ADDRESS = "0x8578230BB765A1894E16220B6B150814A31b28b9";
 const CAPSULE_TOKEN_ID = 1;
@@ -37,29 +31,25 @@ export const Capsule = ({
 }) => {
   const { address } = useAccount();
 
-  // const { config } = usePrepareContractWrite({
-  //   address: YOKI_CONTRACT_ADDRESS,
-  //   abi: abi,
-  //   functionName: "mintWithSignature",
-  // });
   const { data, write } = useContractWrite({
     address: YOKI_CONTRACT_ADDRESS,
     abi,
     functionName: "mintWithSignature",
   });
+
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
   });
 
   const { data: capsuleBalance, refetch: refetchBalance } = useContractRead({
     address: YOKI_CONTRACT_ADDRESS,
-    chainId: 1261120,
     abi,
     functionName: "balanceOf",
-    args: [address, CAPSULE_TOKEN_ID],
+    args: [address as `0x${string}`, BigInt(CAPSULE_TOKEN_ID)],
   });
 
   useEffect(() => {
+    console.log("isSuccess", isSuccess);
     if (isSuccess) refetchBalance();
   }, [refetchBalance, isSuccess]);
 

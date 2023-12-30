@@ -1,5 +1,13 @@
 import { json, type ActionFunctionArgs } from "@remix-run/node"; // or cloudflare/deno
-import { createWalletClient, encodePacked, http, keccak256, publicActions, toBytes } from "viem";
+import { v4 as uuidv4 } from "uuid";
+import {
+  createPublicClient,
+  createWalletClient,
+  encodePacked,
+  http,
+  keccak256,
+  publicActions,
+} from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { astarZkatana } from "viem/chains";
 
@@ -13,6 +21,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       const signature = await signMessage(body);
       return json(signature);
     }
+    default:
+      return json({ error: "Method Not Allowed" }, { status: 405 });
   }
 };
 
@@ -28,16 +38,28 @@ async function signMessage({ to, tokenId, quantity, contractAddress }: ContractD
     transport,
   }).extend(publicActions);
 
-  const nonce = await client.getTransactionCount({ address: account.address });
+  const publicClient = createPublicClient({
+    chain: astarZkatana,
+    transport,
+  });
 
+  const uuid = uuidv4();
+  const nonce: `0x${string}` = `0x${uuid.replace(/-/g, "")}`;
   const encodedMessage = encodePacked(
     ["address", "uint256", "uint256", "uint256", "address"],
     [to, BigInt(tokenId), BigInt(quantity), BigInt(nonce), contractAddress],
   );
   const hash = keccak256(encodedMessage);
 
-  const signedMessage = await client.signMessage({ account, message: hash });
+  const signedMessage = await client.signMessage({ account, message: { raw: hash } });
 
+  const valid = await publicClient.verifyMessage({
+    message: hash,
+    signature: signedMessage,
+    address: account.address,
+  });
+
+  console.log("valid", valid, account.address);
   return { signedMessage, nonce, hash };
 }
 
