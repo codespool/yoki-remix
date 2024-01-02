@@ -6,10 +6,10 @@ export async function strapiLoader<ResponseType>(endpoint: string, qs?: string) 
   const rawResponse = await fetch(url, {
     // headers: { Authorization: `Bearer ${process.env.STRAPI_TOKEN}` },
   });
-  const response = (await rawResponse.json() as ResponseType);
+  const response = (await rawResponse.json()) as ResponseType;
 
   return {
     apiData: response,
-    imageUrlPrefix: process.env.STRAPI_HOSTED_IMAGES ? baseUrl : null,
+    imageUrlPrefix: process.env.STRAPI_HOSTED_IMAGES ? baseUrl : "",
   };
 }

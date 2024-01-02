@@ -39,7 +39,7 @@ export default function Index() {
         <img src={fullLogoUrl} alt="Logo" />
       </div>
       <Link
-        to="/floors/town"
+        to="/floors/countryside"
         className="bg-blue-700 bg-opacity-100 text-white text-4xl font-bold uppercase px-28 py-4 rounded-md mt-12 hover:bg-blue-500 transition-colors duration-300"
       >
         Enter
