@@ -4,6 +4,7 @@ import { LoaderFunction, json } from "@remix-run/node";
 import { strapiLoader } from "~/helpers/strapiLoader";
 import { stringify } from "qs";
 import { useState } from "react";
+import { GachaTokenProvider } from "~/providers/GachaTokenProvider";
 
 export const loader: LoaderFunction = async () => {
   const navbarQuery = stringify(
@@ -167,7 +168,9 @@ export default function Layout() {
         data={leaderboard.data}
       />
       {/* CONTENT */}
-      <Outlet />
+      <GachaTokenProvider>
+        <Outlet />
+      </GachaTokenProvider>
     </>
   );
 }
@@ -195,7 +198,7 @@ function Leaderboard({
         max-w-[60vw]
         w-full
         max-h-[40vh]
-        px-12 
+        px-12
         py-8
         overflow-y-scroll"
           onClick={(e) => {
@@ -249,7 +252,7 @@ function Article({
     <div
       className="
       backdrop-blur
-      bg-gradient-to-b from-[rgba(255,255,255,0.6)] to-[rgba(255,255,255,0.2)] 
+      bg-gradient-to-b from-[rgba(255,255,255,0.6)] to-[rgba(255,255,255,0.2)]
       w-1/3
       p-4
       rounded-lg
@@ -305,7 +308,6 @@ function TableCell({
     };
     if (typeof data === "string" && rankColors[data.toLowerCase()]) {
       const rankColor = rankColors[data.toLowerCase()];
-      console.log(data, rankColor);
       return rankColor;
     }
     return `bg-black bg-opacity-60 ${isMe ? "border border-white" : ""}`;
@@ -315,7 +317,7 @@ function TableCell({
     <div
       className={`
       ${getBg()}
-      rounded-full 
+      rounded-full
       ${size === "s" ? "w-16" : "w-48"}
       flex
       justify-center
