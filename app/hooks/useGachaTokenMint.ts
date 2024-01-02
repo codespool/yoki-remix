@@ -17,6 +17,10 @@ export function useGachaTokenMint(tokenId: number) {
     hash: mintData?.hash,
   });
 
+  const quantity = Object.values(YokiContractConfig.tokens).find(
+    (token) => token.id === tokenId,
+  )?.mintQuantity;
+
   async function fetchSignature() {
     const response = await fetch("/signer", {
       method: "POST",
@@ -32,7 +36,14 @@ export function useGachaTokenMint(tokenId: number) {
 
   async function mintWithSignature() {
     const signature = await fetchSignature();
-    const args = [signature.hash, address, tokenId, 1, signature.nonce, signature.signedMessage];
+    const args = [
+      signature.hash,
+      address,
+      tokenId,
+      quantity,
+      signature.nonce,
+      signature.signedMessage,
+    ];
     if (mint) {
       mint({ args });
     }
