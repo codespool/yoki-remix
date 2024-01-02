@@ -5,7 +5,14 @@ import { YokiContractConfig } from "../contract/config";
 
 const {
   contractAddress,
-  tokens: { baseYokiToken, capsuleToken, omaToken },
+  tokens: {
+    baseYokiToken,
+    capsuleToken,
+    omaToken,
+    mojoYokiToken,
+    passionYokiToken,
+    wisdomYokiToken,
+  },
 } = YokiContractConfig;
 
 type ReadResult = ReturnType<typeof useContractRead>;
@@ -13,6 +20,9 @@ interface GachaTokenContextType {
   omaBalance: ReadResult;
   capsuleBalance: ReadResult;
   baseYokiBalance: ReadResult;
+  mojoYokiBalance: ReadResult;
+  passionYokiBalance: ReadResult;
+  wisdomYokiBalance: ReadResult;
 }
 
 const GachaTokenContext = createContext<GachaTokenContextType | null>(null);
@@ -41,12 +51,36 @@ export const GachaTokenProvider = ({ children }: { children: React.ReactNode }) 
     args: [address as `0x${string}`, BigInt(baseYokiToken.id)],
   });
 
+  const mojoYokiBalance = useContractRead({
+    address: contractAddress,
+    abi,
+    functionName: "balanceOf",
+    args: [address as `0x${string}`, BigInt(mojoYokiToken.id)],
+  });
+
+  const passionYokiBalance = useContractRead({
+    address: contractAddress,
+    abi,
+    functionName: "balanceOf",
+    args: [address as `0x${string}`, BigInt(passionYokiToken.id)],
+  });
+
+  const wisdomYokiBalance = useContractRead({
+    address: contractAddress,
+    abi,
+    functionName: "balanceOf",
+    args: [address as `0x${string}`, BigInt(wisdomYokiToken.id)],
+  });
+
   return (
     <GachaTokenContext.Provider
       value={{
         omaBalance,
         capsuleBalance,
         baseYokiBalance,
+        mojoYokiBalance,
+        passionYokiBalance,
+        wisdomYokiBalance,
       }}
     >
       {children}

@@ -308,7 +308,6 @@ function TableCell({
     };
     if (typeof data === "string" && rankColors[data.toLowerCase()]) {
       const rankColor = rankColors[data.toLowerCase()];
-      console.log(data, rankColor);
       return rankColor;
     }
     return `bg-black bg-opacity-60 ${isMe ? "border border-white" : ""}`;

@@ -1,164 +1,100 @@
-import React, { useEffect } from "react";
-import {
-  useAccount,
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-} from "wagmi";
+import { YokiContractConfig } from "../contract/config";
+import { useGachaTokenBalances } from "../providers/GachaTokenProvider";
+import { useGachaTokenMint } from "../hooks/useGachaTokenMint";
 
-import { TokenMetadata } from "~/routes/_layout.baths";
+const {
+  tokens: { mojoYokiToken, passionYokiToken, wisdomYokiToken },
+} = YokiContractConfig;
 
-const abi = [
-  {
-    name: "mint",
-    inputs: [
-      { name: "account", type: "address" },
-      { name: "id", type: "uint256" },
-      { name: "amount", type: "uint256" },
-      { name: "", type: "bytes" },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-    outputs: [],
-  },
-  {
-    name: "balanceOf",
-    inputs: [
-      { name: "account", type: "address" },
-      { name: "id", type: "uint256" },
-    ],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    name: "uri",
-    inputs: [{ name: "_tokenId", type: "uint256" }],
-    outputs: [{ name: "", type: "string" }],
-    stateMutability: "view",
-    type: "function",
-  },
-];
-
-const YOKI_CONTRACT_ADDRESS = "0x4e14510c4DCEB04567CA5752C953c49D13254fe7";
-const YOKI1_TOKEN_ID = 3;
-const YOKI2_TOKEN_ID = 4;
-const YOKI3_TOKEN_ID = 5;
+import { TokenMetadata } from "../routes/_layout.baths";
 
 const EvolvedYoki = ({
   tokenMetadata,
   imageUrlPrefix,
 }: { tokenMetadata: TokenMetadata; imageUrlPrefix: string }) => {
-  const { address } = useAccount();
+  const {
+    baseYokiBalance,
+    capsuleBalance,
+    mojoYokiBalance,
+    omaBalance,
+    passionYokiBalance,
+    wisdomYokiBalance,
+  } = useGachaTokenBalances();
 
-  const { config } = usePrepareContractWrite({
-    address: YOKI_CONTRACT_ADDRESS,
-    abi: abi,
-    functionName: "mint",
-    args: [address, YOKI1_TOKEN_ID, 1, "0x"],
-  });
-  const { data, write } = useContractWrite(config);
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: data?.hash,
-  });
-
-  const { data: tokenUri3 } = useContractRead({
-    address: YOKI_CONTRACT_ADDRESS,
-    chainId: 1261120,
-    abi,
-    functionName: "uri",
-    args: [YOKI1_TOKEN_ID],
-  });
-  const { data: tokenUri4 } = useContractRead({
-    address: YOKI_CONTRACT_ADDRESS,
-    chainId: 1261120,
-    abi,
-    functionName: "uri",
-    args: [YOKI2_TOKEN_ID],
-  });
-  const { data: tokenUri5 } = useContractRead({
-    address: YOKI_CONTRACT_ADDRESS,
-    chainId: 1261120,
-    abi,
-    functionName: "uri",
-    args: [YOKI3_TOKEN_ID],
-  });
-
-  const { data: yoki3Balance, refetch: refetch3 } = useContractRead({
-    address: YOKI_CONTRACT_ADDRESS,
-    chainId: 1261120,
-    abi,
-    functionName: "balanceOf",
-    args: [address, YOKI1_TOKEN_ID],
-  });
-  const { data: yoki4Balance, refetch: refetch4 } = useContractRead({
-    address: YOKI_CONTRACT_ADDRESS,
-    chainId: 1261120,
-    abi,
-    functionName: "balanceOf",
-    args: [address, YOKI2_TOKEN_ID],
-  });
-  const { data: yoki5Balance, refetch: refetch5 } = useContractRead({
-    address: YOKI_CONTRACT_ADDRESS,
-    chainId: 1261120,
-    abi,
-    functionName: "balanceOf",
-    args: [address, YOKI3_TOKEN_ID],
-  });
-
-  useEffect(() => {
-    if (isSuccess) {
-      refetch3();
-      refetch4();
-      refetch5();
-    }
-  }, [isSuccess, refetch3, refetch4, refetch5]);
-
-  const tokenImage1 = tokenMetadata?.data?.images.find(
-    (image) => image.token_id === YOKI1_TOKEN_ID,
+  const {
+    mintWithSignature,
+    isMintLoading,
+    isMintDisabled,
+    mintData,
+    isMintSuccess,
+    isMintWriteError,
+    mintWriteError,
+  } = useGachaTokenMint(mojoYokiToken.id, [
+    baseYokiBalance.refetch,
+    omaBalance.refetch,
+    capsuleBalance.refetch,
+    mojoYokiBalance.refetch,
+    passionYokiBalance.refetch,
+    wisdomYokiBalance.refetch,
+  ]);
+  const mojoYokiImage = tokenMetadata?.data?.images.find(
+    (image) => image.token_id === mojoYokiToken.id,
   )?.token_image;
 
-  const tokenImage2 = tokenMetadata?.data?.images.find(
-    (image) => image.token_id === YOKI2_TOKEN_ID,
+  const passionYokiImage = tokenMetadata?.data?.images.find(
+    (image) => image.token_id === passionYokiToken.id,
   )?.token_image;
 
-  const tokenImage3 = tokenMetadata?.data?.images.find(
-    (image) => image.token_id === YOKI3_TOKEN_ID,
+  const wisdomYokiImage = tokenMetadata?.data?.images.find(
+    (image) => image.token_id === wisdomYokiToken.id,
   )?.token_image;
 
   return (
     <div className="flex flex-col items-center space-y-8">
       <div className="flex flex-col items-center align-middle">
-        <p className="">Mojo Yoki tokens: {yoki3Balance?.toString() || "?"}</p>
+        <p className="">
+          Mojo Yoki tokens:{" "}
+          {mojoYokiBalance.isLoading ? "Loading..." : mojoYokiBalance.data?.toString() || "?"}
+        </p>
         <div className="w-1/3">
-          <img src={`${imageUrlPrefix}${tokenImage1?.url}`} alt={`${tokenImage1?.name}`} />
+          <img src={`${imageUrlPrefix}${mojoYokiImage?.url}`} alt={`${mojoYokiImage?.name}`} />
         </div>
       </div>
       <div className="flex flex-col items-center align-middle">
-        <p className="">Passion Yoki tokens: {yoki4Balance?.toString() || "?"}</p>
+        <p className="">
+          Passion Yoki tokens:{" "}
+          {passionYokiBalance.isLoading ? "Loading..." : passionYokiBalance.data?.toString() || "?"}
+        </p>
         <div className="w-1/3">
-          <img src={`${imageUrlPrefix}${tokenImage2?.url}`} alt={`${tokenImage2?.name}`} />
+          <img
+            src={`${imageUrlPrefix}${passionYokiImage?.url}`}
+            alt={`${passionYokiImage?.name}`}
+          />
         </div>
       </div>
       <div className="flex flex-col items-center align-middle">
-        <p className="">Wisdom Yoki tokens: {yoki5Balance?.toString() || "?"}</p>
+        <p className="">
+          Wisdom Yoki tokens:{" "}
+          {wisdomYokiBalance.isLoading ? "Loading..." : wisdomYokiBalance.data?.toString() || "?"}
+        </p>
         <div className="w-1/3">
-          <img src={`${imageUrlPrefix}${tokenImage3?.url}`} alt={`${tokenImage3?.name}`} />
+          <img src={`${imageUrlPrefix}${wisdomYokiImage?.url}`} alt={`${wisdomYokiImage?.name}`} />
         </div>
       </div>
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
-        disabled={!write}
-        onClick={() => write?.()}
+        disabled={isMintDisabled}
+        onClick={mintWithSignature}
       >
-        {isLoading ? "Evolving YOKI..." : "Evolve"}
+        {isMintLoading ? "Evolving YOKI..." : "Evolve"}
       </button>
-      {isSuccess && (
+
+      <div className="text-red-500 text-s italic">{isMintWriteError && mintWriteError}</div>
+      {isMintSuccess && (
         <div>
           Successfully Evolved Yoki!
           <div>
-            <a href={`https://zkatana.blockscout.com/tx/${data?.hash}`}>BlockExplorer</a>
+            <a href={`https://zkatana.blockscout.com/tx/${mintData?.hash}`}>BlockExplorer</a>
           </div>
         </div>
       )}

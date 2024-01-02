@@ -40,8 +40,9 @@ export const Capsule = ({
       )}
       <div className="flex flex-col items-center align-middle">
         <p className="">
-          Capsule tokens:{" "}
-          {capsuleBalance.isLoading ? "Loading..." : capsuleBalance.data?.toString() || "?"}
+          {`Capsule tokens: ${
+            capsuleBalance.isLoading ? "Loading..." : capsuleBalance.data?.toString() || "?"
+          }`}
         </p>
         <div className={`${imageSize ?? ""}`}>
           <img src={`${imageUrlPrefix}${tokenImage?.url}`} alt={`${tokenImage?.name}`} />

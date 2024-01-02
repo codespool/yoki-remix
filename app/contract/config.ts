@@ -4,6 +4,9 @@ export const YokiContractConfig: ContractConfig = {
     omaToken: { id: 0, mintQuantity: 3, name: "Oma" },
     capsuleToken: { id: 1, mintQuantity: 1, name: "Capsule" },
     baseYokiToken: { id: 2, mintQuantity: 1, name: "Base Yoki" },
+    mojoYokiToken: { id: 3, mintQuantity: 1, name: "Mojo Yoki" },
+    passionYokiToken: { id: 4, mintQuantity: 1, name: "Passion Yoki" },
+    wisdomYokiToken: { id: 5, mintQuantity: 1, name: "Wisdom Yoki" },
   },
 };
 

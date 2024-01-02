@@ -51,7 +51,6 @@ async function signMessage({ to, tokenId, contractAddress }: ContractDetails) {
   const uuid = uuidv4();
   const nonce: `0x${string}` = `0x${uuid.replace(/-/g, "")}`;
 
-  console.log({ to, tokenId, quantity, nonce, contractAddress });
   const encodedMessage = encodePacked(
     ["address", "uint256", "uint256", "uint256", "address"],
     [to, BigInt(tokenId), BigInt(quantity || 1), BigInt(nonce), contractAddress],

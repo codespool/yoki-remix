@@ -8,13 +8,23 @@ const { contractAddress } = YokiContractConfig;
 export function useGachaTokenMint(tokenId: number, callbacks: (() => void)[]) {
   const { address } = useAccount();
 
-  const { data: mintData, write: mint } = useContractWrite({
+  const {
+    data: mintData,
+    write: mint,
+    isError: isMintWriteError,
+    error: mintWriteError,
+  } = useContractWrite({
     address: contractAddress,
     abi,
     functionName: "mintWithSignature",
   });
 
-  const { isLoading: isMintLoading, isSuccess: isMintSuccess } = useWaitForTransaction({
+  const {
+    isLoading: isMintLoading,
+    isSuccess: isMintSuccess,
+    isError: isMintError,
+    error: mintError,
+  } = useWaitForTransaction({
     hash: mintData?.hash,
   });
 
@@ -45,11 +55,11 @@ export function useGachaTokenMint(tokenId: number, callbacks: (() => void)[]) {
 
   async function mintWithSignature() {
     const signature = await fetchSignature();
-    const args = [
+    const args: readonly [`0x${string}`, `0x${string}`, bigint, bigint, bigint, `0x${string}`] = [
       signature.hash,
-      address,
-      tokenId,
-      quantity,
+      address as `0x${string}`,
+      BigInt(tokenId),
+      BigInt(quantity as number),
       signature.nonce,
       signature.signedMessage,
     ];
@@ -63,5 +73,12 @@ export function useGachaTokenMint(tokenId: number, callbacks: (() => void)[]) {
     isMintLoading,
     isMintSuccess,
     isMintDisabled: !mint,
+    mintData,
+    isMintWriteError,
+    mintWriteError: mintWriteError?.message
+      ?.toString()
+      .split("\n")
+      .find((line) => line.includes("Gacha"))
+      ?.replace("Gacha", "Error"),
   };
 }
