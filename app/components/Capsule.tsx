@@ -1,7 +1,7 @@
 import { TokenMetadata } from "~/routes/_layout.baths";
 import { YokiContractConfig } from "../contract/config";
 import { useGachaTokenMint } from "../hooks/useGachaTokenMint";
-import { useGachaTokenBalance } from "../hooks/useGachaTokenBalance";
+import { useGachaTokenBalances } from "../providers/GachaTokenProvider";
 
 const {
   tokens: { capsuleToken },
@@ -18,9 +18,9 @@ export const Capsule = ({
   tokenMetadata: TokenMetadata;
   imageUrlPrefix: string;
 }) => {
-  const { tokenBalance, refetchBalance, isBalanceLoading } = useGachaTokenBalance(capsuleToken.id);
+  const { capsuleBalance } = useGachaTokenBalances();
   const { mintWithSignature, isMintLoading, isMintDisabled } = useGachaTokenMint(capsuleToken.id, [
-    refetchBalance,
+    capsuleBalance.refetch,
   ]);
 
   const tokenImage = tokenMetadata?.data?.images.find(
@@ -40,7 +40,8 @@ export const Capsule = ({
       )}
       <div className="flex flex-col items-center align-middle">
         <p className="">
-          Capsule tokens: {isBalanceLoading ? "Loading..." : tokenBalance?.toString() || "?"}
+          Capsule tokens:{" "}
+          {capsuleBalance.isLoading ? "Loading..." : capsuleBalance.data?.toString() || "?"}
         </p>
         <div className={`${imageSize ?? ""}`}>
           <img src={`${imageUrlPrefix}${tokenImage?.url}`} alt={`${tokenImage?.name}`} />

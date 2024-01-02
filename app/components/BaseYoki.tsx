@@ -7,44 +7,12 @@ import {
   useWaitForTransaction,
   useBalance,
 } from "wagmi";
-
+import { YokiContractConfig } from "../contract/config";
 import { TokenMetadata } from "~/routes/_layout.baths";
 
-const abi = [
-  {
-    name: "mint",
-    inputs: [
-      { name: "account", type: "address" },
-      { name: "id", type: "uint256" },
-      { name: "amount", type: "uint256" },
-      { name: "", type: "bytes" },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-    outputs: [],
-  },
-  {
-    name: "balanceOf",
-    inputs: [
-      { name: "account", type: "address" },
-      { name: "id", type: "uint256" },
-    ],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    name: "uri",
-    inputs: [{ name: "_tokenId", type: "uint256" }],
-    outputs: [{ name: "", type: "string" }],
-    stateMutability: "view",
-    type: "function",
-  },
-];
-
-const YOKI_CONTRACT_ADDRESS = "0x4e14510c4DCEB04567CA5752C953c49D13254fe7";
-const YOKI_TOKEN_ID = 2;
-
+const {
+  tokens: { baseYokiToken },
+} = YokiContractConfig;
 const BaseYoki = ({
   tokenMetadata,
   imageUrlPrefix,

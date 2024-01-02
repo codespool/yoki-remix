@@ -1,7 +1,7 @@
 import { useGachaTokenMint } from "../hooks/useGachaTokenMint";
-import { useGachaTokenBalance } from "../hooks/useGachaTokenBalance";
 import { TokenMetadata } from "../routes/_layout.baths";
 import { YokiContractConfig } from "~/contract/config";
+import { useGachaTokenBalances } from "~/providers/GachaTokenProvider";
 
 const {
   tokens: { omaToken },
@@ -18,9 +18,9 @@ export const Oma = ({
   tokenMetadata: TokenMetadata;
   imageUrlPrefix: string;
 }) => {
-  const { tokenBalance, refetchBalance, isBalanceLoading } = useGachaTokenBalance(omaToken.id);
+  const { omaBalance } = useGachaTokenBalances();
   const { mintWithSignature, isMintLoading, isMintDisabled } = useGachaTokenMint(omaToken.id, [
-    refetchBalance,
+    omaBalance.refetch,
   ]);
 
   const tokenImage = tokenMetadata?.data?.images.find(
@@ -41,7 +41,7 @@ export const Oma = ({
 
       <div className="flex flex-col items-center align-middle">
         <p className="">
-          Oma tokens: {isBalanceLoading ? "Loading..." : tokenBalance?.toString() || "?"}
+          Oma tokens: {omaBalance.isLoading ? "Loading..." : omaBalance.data?.toString() || "?"}
         </p>
         <div className={`${imageSize ?? ""} bg-white rounded-full border border-slate-500`}>
           <img src={`${imageUrlPrefix}${tokenImage?.url}`} alt={`${tokenImage?.name}`} />
