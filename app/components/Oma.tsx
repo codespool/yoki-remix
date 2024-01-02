@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { useGachaTokenMint } from "../hooks/useGachaTokenMint";
 import { useGachaTokenBalance } from "../hooks/useGachaTokenBalance";
 import { TokenMetadata } from "../routes/_layout.baths";
@@ -19,14 +18,10 @@ export const Oma = ({
   tokenMetadata: TokenMetadata;
   imageUrlPrefix: string;
 }) => {
-  const { mintWithSignature, isMintLoading, isMintSuccess, isMintDisabled } = useGachaTokenMint(
-    omaToken.id,
-  );
   const { tokenBalance, refetchBalance, isBalanceLoading } = useGachaTokenBalance(omaToken.id);
-
-  useEffect(() => {
-    if (isMintSuccess) refetchBalance();
-  }, [refetchBalance, isMintSuccess]);
+  const { mintWithSignature, isMintLoading, isMintDisabled } = useGachaTokenMint(omaToken.id, [
+    refetchBalance,
+  ]);
 
   const tokenImage = tokenMetadata?.data?.images.find(
     (image) => image.token_id === omaToken.id,

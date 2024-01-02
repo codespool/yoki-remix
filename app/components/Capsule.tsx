@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { TokenMetadata } from "~/routes/_layout.baths";
 import { YokiContractConfig } from "../contract/config";
 import { useGachaTokenMint } from "../hooks/useGachaTokenMint";
@@ -19,14 +18,10 @@ export const Capsule = ({
   tokenMetadata: TokenMetadata;
   imageUrlPrefix: string;
 }) => {
-  const { mintWithSignature, isMintLoading, isMintSuccess, isMintDisabled } = useGachaTokenMint(
-    capsuleToken.id,
-  );
   const { tokenBalance, refetchBalance, isBalanceLoading } = useGachaTokenBalance(capsuleToken.id);
-
-  useEffect(() => {
-    if (isMintSuccess) refetchBalance();
-  }, [refetchBalance, isMintSuccess]);
+  const { mintWithSignature, isMintLoading, isMintDisabled } = useGachaTokenMint(capsuleToken.id, [
+    refetchBalance,
+  ]);
 
   const tokenImage = tokenMetadata?.data?.images.find(
     (image) => image.token_id === capsuleToken.id,
