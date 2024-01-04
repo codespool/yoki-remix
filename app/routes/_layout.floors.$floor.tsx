@@ -14,6 +14,7 @@ type ImageData = {
 type GachaMachine = {
   id: number;
   title: string;
+  subtitle: string;
   description: string;
   image: ImageData;
   bandit_collection_id: number;
@@ -303,6 +304,7 @@ export default function Floor() {
                       onScroll={(event) => event.stopPropagation()}
                     >
                       <p className="p-4 font-bold text-xl capitalize">{machine.title}</p>
+                      <p className="p-4 font-bold text-xl capitalize">{machine.subtitle}</p>
                       <p className="p-4">{machine.description}</p>
                       <p className="p-4 font-bold text-blue-500">
                         <a
@@ -345,7 +347,14 @@ export default function Floor() {
                       onScroll={(event) => event.stopPropagation()}
                     >
                       <p className="p-4 font-bold text-xl capitalize">{machine.title}</p>
-                      <p className="p-4">Partner name: {machine.description}</p>
+                      <p className="p-4 font-bold text-xl capitalize">{machine.subtitle}</p>
+                      <p className="p-4">
+                        <ul>
+                          {machine.description.split("-").map((bullet, index) => (
+                            <li key={index}>{bullet}</li>
+                          ))}
+                        </ul>
+                      </p>
                       <BanditQuest
                         isOpen={!!visibleDiv}
                         collectionId={machine.bandit_collection_id}
