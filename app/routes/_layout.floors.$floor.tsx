@@ -18,7 +18,13 @@ type GachaMachine = {
   description: string;
   image: ImageData;
   bandit_collection_id: number;
-  type: "yoki" | "oma" | "bandit_onchain" | "bandit_social";
+  type: "yoki" | "oma" | "bandit_quest";
+  links: Link[];
+};
+
+type Link = {
+  text: string;
+  url: string;
 };
 
 type floorData = {
@@ -207,13 +213,13 @@ export default function Floor() {
 
         <div className="row-start-2 col-start-1 overflow-auto col-span-2">
           <div
-            className="flex overflow-x-auto h-full scrollbar-hide items-center pl-[30%] z-10"
+            className="flex overflow-x-auto h-full scrollbar-hide items-center pl-[20%] z-10 space-x-32"
             ref={scrollContainerRef}
           >
             {apiData.gachaMachines.map((machine: GachaMachine) => {
               if (machine.type === "yoki") {
                 return (
-                  <div className="flex mr-[20%] items-center" key={machine.id}>
+                  <div className="flex items-center" key={machine.id}>
                     <div className="min-w-[450px] h-[45vh] relative">
                       <img
                         src={`${imageUrlPrefix ?? ""}${machine.image.url}`}
@@ -249,7 +255,7 @@ export default function Floor() {
               }
               if (machine.type === "oma") {
                 return (
-                  <div className="flex mr-[20%] items-center" key={machine.id}>
+                  <div className="flex items-center" key={machine.id}>
                     <div className="min-w-[450px] h-[45vh] relative">
                       <img
                         src={`${imageUrlPrefix ?? ""}${machine.image.url}`}
@@ -281,9 +287,9 @@ export default function Floor() {
                   </div>
                 );
               }
-              if (machine.type === "bandit_onchain") {
+              if (machine.type === "bandit_quest") {
                 return (
-                  <div className="flex mr-[20%] items-center" key={machine.id}>
+                  <div className="flex items-center" key={machine.id}>
                     <div className="min-w-[450px] h-[45vh] relative">
                       <img
                         src={`${imageUrlPrefix ?? ""}${machine.image.url}`}
@@ -304,56 +310,23 @@ export default function Floor() {
                       onScroll={(event) => event.stopPropagation()}
                     >
                       <p className="p-4 font-bold text-xl capitalize">{machine.title}</p>
-                      <p className="p-4 font-bold text-xl capitalize">{machine.subtitle}</p>
-                      <p className="p-4">{machine.description}</p>
-                      <p className="p-4 font-bold text-blue-500">
-                        <a
-                          target="_blank"
-                          rel="noreferrer"
-                          href="https://embed.ipfscdn.io/ipfs/bafybeigdie2yyiazou7grjowoevmuip6akk33nqb55vrpezqdwfssrxyfy/erc1155.html?contract=0x680ddB1b8c0736d060BbF8455b669cf9b70f84A8&chain=%7B%22name%22%3A%22zKatana%22%2C%22chain%22%3A%22ETH%22%2C%22rpc%22%3A%5B%22https%3A%2F%2Fzkatana.rpc.thirdweb.com%2Ff33bf946e25b6be471b7cfe6e16b3b39%22%5D%2C%22nativeCurrency%22%3A%7B%22name%22%3A%22Sepolia+Ether%22%2C%22symbol%22%3A%22ETH%22%2C%22decimals%22%3A18%7D%2C%22shortName%22%3A%22azktn%22%2C%22chainId%22%3A1261120%2C%22testnet%22%3Atrue%2C%22slug%22%3A%22zkatana%22%2C%22icon%22%3A%7B%22url%22%3A%22ipfs%3A%2F%2FQmRySLe3su59dE5x5JPm2b1GeZfz6DR9qUzcbp3rt4SD3A%22%2C%22width%22%3A300%2C%22height%22%3A300%2C%22format%22%3A%22png%22%7D%7D&clientId=f33bf946e25b6be471b7cfe6e16b3b39&tokenId=0&theme=dark&primaryColor=green"
-                        >
-                          Mint OG Token here
-                        </a>
-                      </p>
-                      <BanditQuest
-                        isOpen={!!visibleDiv}
-                        collectionId={machine.bandit_collection_id}
-                        onClose={() => {}}
-                      />
-                    </div>
-                  </div>
-                );
-              }
-              if (machine.type === "bandit_social") {
-                return (
-                  <div className="flex mr-[20%] items-center" key={machine.id}>
-                    <div className="min-w-[450px] h-[45vh] relative">
-                      <img
-                        src={`${imageUrlPrefix ?? ""}${machine.image.url}`}
-                        alt={`Gacha machine ${machine.title}`}
-                        className="absolute inset-0 w-full min-h-fit h-full object-cover cursor-pointer"
-                        onClick={() => handleImageClick(machine.id)}
-                      />
-                    </div>
-
-                    <div
-                      id={`image_details_${machine.id}`}
-                      className="transition-all overflow-y-scroll bg-gray-200 rounded-lg self-stretch max-h-[45vh]"
-                      style={{
-                        width: visibleDiv === machine.id ? "500px" : "0",
-                        opacity: 0.9,
-                        transition: "width 0.3s ease",
-                      }}
-                      onScroll={(event) => event.stopPropagation()}
-                    >
-                      <p className="p-4 font-bold text-xl capitalize">{machine.title}</p>
-                      <p className="p-4 font-bold text-xl capitalize">{machine.subtitle}</p>
+                      <p className="p-4 font-bold text-l capitalize">{machine.subtitle}</p>
                       <p className="p-4">
-                        <ul>
-                          {machine.description.split("-").map((bullet, index) => (
-                            <li key={index}>{bullet}</li>
-                          ))}
+                        <ul className="list-disc">
+                          {machine.description
+                            .split("-")
+                            .filter((bullet) => bullet.length > 0)
+                            .map((bullet, index) => (
+                              <li key={`${machine.id}_${index}`}>{bullet}</li>
+                            ))}
                         </ul>
+                      </p>
+                      <p className="p-4">
+                        {machine.links.map((link) => (
+                          <a href={link.url} key={link.url} className="underline">
+                            {link.text}
+                          </a>
+                        ))}
                       </p>
                       <BanditQuest
                         isOpen={!!visibleDiv}
@@ -370,7 +343,7 @@ export default function Floor() {
       </div>
 
       {/* Scroll Indicator Container */}
-      <div className="absolute bottom-10 left-1/3 right-1/3 z-20 flex justify-between items-center">
+      <div className="absolute bottom-10 left-1/3 right-1/3 flex justify-between items-center z-0">
         {/* Left Button */}
         <button
           className="flex justify-center items-center p-2 bg-blue-500 text-white rounded-full h-10 w-10 hover:bg-blue-300 transition-colors duration-300 focus:border-none"
