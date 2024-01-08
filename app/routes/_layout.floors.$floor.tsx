@@ -312,7 +312,7 @@ export default function Floor() {
                       <p className="p-4 font-bold text-xl capitalize">{machine.title}</p>
                       <p className="p-4 font-bold text-l capitalize">{machine.subtitle}</p>
                       <p className="p-4">
-                        <ul className="list-disc">
+                        <ul className="list-disc p-4">
                           {machine.description
                             .split("-")
                             .filter((bullet) => bullet.length > 0)
