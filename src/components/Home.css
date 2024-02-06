@@ -1,0 +1,143 @@
+.bg-img {
+  background-image: url("/main_background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: scroll;
+  height: 100svh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.features {
+  background: rgba(255, 255, 255, 0.40);
+  backdrop-filter: blur(10px);
+}
+
+.features-card {
+  border-radius: 16px;
+  /* border: 1px solid rgba(255, 255, 255, 0.20); */
+  background: linear-gradient(180deg, rgba(2, 151, 251, 0.83) 50%, rgba(2, 151, 251, 0.00) 100%);
+}
+
+.features-card .title {
+  color: var(--white, #FFF);
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 110%; /* 26.4px */
+}
+
+.features-card .content {
+  color: var(--white, #FFF);
+  text-align: justify;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 160%; /* 22.4px */
+}
+
+.enter-button {
+  color: #FFF;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 2.24px;
+  text-transform: uppercase;
+  display: inline-flex;
+  padding: 16px 60px;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  border-radius: 12px;
+  border: 1px solid #FFF;
+  background: var(--PrimaryGradation, linear-gradient(100deg, #E6007A -10.06%, #703AC2 21.84%, #0070EB 47.65%, #0297FB 70.74%, #0AE2FF 96.35%));
+}
+
+@media screen and (max-width: 768px) {
+  .characters {
+    height: 600px;
+  }
+
+  .features-card {
+    border-radius: 16px;
+    border: 1px solid #FFF;
+    background: rgba(2, 151, 251, 0.70);
+  }
+}
+
+#logo {
+  transform: translateY(50%);
+  animation: slideIn 0.7s ease forwards;
+}
+
+#girl {
+  transform: translateY(10%);
+  opacity: 0;
+  animation: characters 0.5s ease 0.5s forwards;
+}
+
+#boy {
+  transform: translateY(10%);
+  opacity: 0;
+  animation: characters 0.5s ease 0.8s forwards;
+}
+
+#fox {
+  transform: translateY(10%);
+  opacity: 0;
+  animation: characters 0.5s ease 1.1s forwards;
+}
+
+#bg {
+  transform: translateY(10%);
+  opacity: 0;
+  animation: bg 0.7s ease-in 2s forwards;
+}
+
+/* animations */
+@keyframes slideIn {
+  0% {
+    transform: translateY(50%);
+  }
+  50% {
+    transform: translateY(-2%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes characters {
+  0% {
+    transform: translateY(10%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+@keyframes bg {
+  0% {
+    transform: translateY(10%);
+    opacity: 0;
+  }
+  25% {
+    transform: translateY(-2%);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(-1%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
